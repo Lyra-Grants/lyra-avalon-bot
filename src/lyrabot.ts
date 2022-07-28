@@ -24,6 +24,7 @@ import { StatDiscord } from './templates/stats'
 import { STATS_CHANNEL, TRADE_CHANNEL } from './constants/discordChannels'
 import { HelpDiscord, LyraDiscord, QuantDiscord } from './templates/help'
 import { GetLyra } from './lyra/lyra'
+import { GetTrader, GetTraderStats } from './lyra/trader'
 
 let discordClient: Client<boolean>
 let twitterClient: TwitterApi
@@ -143,6 +144,16 @@ export async function SetUpDiscord() {
           await interaction.reply({ embeds: embed })
         } else {
           await interaction.reply(`Command 'quant' only available in <#${statsChannel?.id}> or <#${tradeChannel?.id}> `)
+        }
+      }
+      if (commandName === 'trader') {
+        if (channelName === STATS_CHANNEL) {
+          const traderDto = await GetTraderStats(interaction.options.getString('address') as string, lyraClient)
+
+          const stats = StatDiscord(statsDto)
+          await interaction.reply({ embeds: stats })
+        } else {
+          await interaction.reply(`Command 'stats' only available in <#${statsChannel?.id}>`)
         }
       }
     })
